@@ -107,7 +107,7 @@ def calculate_duty(rotation, start_date, interval='week') -> int:
 
     if interval == 'week':
         return calculate_index(weeks, rotation)
-    elif interval == 'months':
+    elif interval == 'month':
         return calculate_index(months, rotation)
 
 
@@ -125,12 +125,14 @@ def get_names(rooms: list) -> tuple:
     return names
 
 
-def update_date():
-    '''Update date in the db.'''
+def update_date(chore: str, 
+                start_date=datetime.strptime('2022-12-25 00:00:00', '%Y-%m-%d %H:%M:%S')
+                ):
+    '''Update date for a given chore in the db.'''
     data = {
-        "startDate": datetime.strptime('2022-12-25 00:00:00', '%Y-%m-%d %H:%M:%S')
+        "startDate": start_date
     }
-    db.collection("chores").document("garbage").set(data, merge=True)
+    db.collection("chores").document(chore).set(data, merge=True)
     return 'OK'
 
 
@@ -151,14 +153,21 @@ def update_index(index: int, chore: str):
     return 'OK'
 
 
-chore = 'garbage'
-garbage_rotation, start_date = get_rotation(chore)
-index, rooms_on_duty = calculate_duty(garbage_rotation, start_date)
+rotation, start_date = get_rotation(chore='groceries')
+index, rooms_on_duty = calculate_duty(rotation, start_date, interval='month')
 names = get_names(rooms_on_duty)
 print('Index:', index, 'for rooms', rooms_on_duty)
 print('Names:', names)
 #update_index(index, chore)
-print('CurrentIndex from db:', get_current_index(chore))
+#print('CurrentIndex from db:', get_current_index(chore='groceries'))
+
+# garbage_rotation, garbage_start_date = get_rotation(chore='garbage')
+# index, rooms_on_duty = calculate_duty(garbage_rotation, garbage_start_date)
+# names = get_names(rooms_on_duty)
+# print('Index:', index, 'for rooms', rooms_on_duty)
+# print('Names:', names)
+# #update_index(index, chore)
+# print('CurrentIndex from db:', get_current_index(chore='garbage'))
 
 # TODO 
-# Add current index on rotation to DB
+# Add current index on rotation for the groceries chore
