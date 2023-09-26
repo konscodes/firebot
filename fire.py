@@ -4,11 +4,46 @@ This script will perform the basic read and write on the database'''
 import firebase_admin
 from firebase_admin import firestore
 from datetime import datetime, timezone
+import re
 
 # Initialize the app with default credentials
 app = firebase_admin.initialize_app()
 
 db = firestore.client()
+
+def get_rotation_snapshot(chore: str) -> dict:
+    '''Get the rotation snapshot from the db.
+    
+    Args: 
+        chore (str): a chore name (e.g. "garbage")
+
+    Returns:
+        dict: dict with keys for index and values for lists of rooms
+    '''
+    chore_ref = db.collection('chores').document(chore)
+    chore_snapshot = chore_ref.get(timeout=50000).to_dict()
+    return chore_snapshot
+
+
+def get_current_index(chore: str):
+    '''Get the index of current rooms for a given chore.
+
+    Args: 
+        chore (str): a chore name (e.g. "garbage")
+
+    Returns:
+        int: index int corresponding to rooms list in rotation dict
+    '''
+    chore_ref = db.collection('chores').document(chore)
+    chore_snapshot = chore_ref.get(timeout=50000).to_dict()
+    
+    try:
+        current_index = chore_snapshot['currentIndex']
+    except TypeError:
+        return 'Snapshot is empty. Index is missing.'
+    
+    return current_index
+
 
 def get_rotation(chore: str) -> (list[list], str):
     '''Get a list of rooms on rotation for a given chore
@@ -20,9 +55,7 @@ def get_rotation(chore: str) -> (list[list], str):
         list[list]: a list of lists with room numbers for each team
         str: start date of the rotation for further calculations
     '''
-    chore_ref = db.collection('chores').document(chore)
-
-    chore_snapshot = chore_ref.get(timeout=50000).to_dict()
+    chore_snapshot = get_rotation_snapshot(chore)
     
     try:
         chore_rotation = chore_snapshot['rotation']
@@ -92,20 +125,40 @@ def get_names(rooms: list) -> tuple:
     return names
 
 
-def update_data():
-    '''Generic function to update the start date in the db'''
+def update_date():
+    '''Update date in the db.'''
     data = {
-    "startDate": datetime.strptime('2022-12-25 00:00:00', '%Y-%m-%d %H:%M:%S')
+        "startDate": datetime.strptime('2022-12-25 00:00:00', '%Y-%m-%d %H:%M:%S')
     }
-    
     db.collection("chores").document("garbage").set(data, merge=True)
+    return 'OK'
 
 
-garbage_rotation, start_date = get_rotation('garbage')
+def update_index(index: int, chore: str):
+    '''Update index in the db.
+        
+    Args:
+        index(int): index corresponding to rooms array for given rotation 
+    '''
+    data = {"currentIndex": index}
+
+    pattern = r'^(garbage|groceries)$'
+
+    if re.match(pattern, chore) is None:
+        return 'Error: unable to update the index. Rotation not found.'
+
+    db.collection("chores").document(chore).set(data, merge=True)
+    return 'OK'
+
+
+chore = 'garbage'
+garbage_rotation, start_date = get_rotation(chore)
 index, rooms_on_duty = calculate_duty(garbage_rotation, start_date)
 names = get_names(rooms_on_duty)
-print(index, rooms_on_duty)
-print(names)
+print('Index:', index, 'for rooms', rooms_on_duty)
+print('Names:', names)
+#update_index(index, chore)
+print('CurrentIndex from db:', get_current_index(chore))
 
 # TODO 
-## add data to the db 
+# Add current index on rotation to DB
