@@ -168,6 +168,3 @@ print('Names:', names)
 # print('Names:', names)
 # #update_index(index, chore)
 # print('CurrentIndex from db:', get_current_index(chore='garbage'))
-
-# TODO 
-# Add current index on rotation for the groceries chore
