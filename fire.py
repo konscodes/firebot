@@ -6,10 +6,32 @@ from firebase_admin import firestore
 from datetime import datetime, timezone
 import re
 
-# Initialize the app with default credentials
-app = firebase_admin.initialize_app()
+class DataBase:
+    def __init__(self) -> None:
+        self.app = firebase_admin.initialize_app()
+        self.db = firestore.client()
+        print('[Fire] Init successful')
 
-db = firestore.client()
+    def get_rotation(self, chore: str) -> (list[list], str):
+        pass
+    
+    def get_rotation_snapshot(self, chore: str) -> dict:
+        pass
+
+    def get_current_index(self, chore: str):
+        pass
+
+    def get_names(self, rooms: list) -> tuple:
+        pass
+
+    def update_date(self, chore: str, 
+                    start_date=datetime.strptime(
+                        '2022-12-25 00:00:00', '%Y-%m-%d %H:%M:%S')):
+        pass
+
+    def update_index(self, index: int, chore: str):
+        pass
+
 
 def get_rotation_snapshot(chore: str) -> dict:
     '''Get the rotation snapshot from the db.
@@ -152,19 +174,24 @@ def update_index(index: int, chore: str):
     db.collection("chores").document(chore).set(data, merge=True)
     return 'OK'
 
+def main():
+    '''Debug function to test the module. This wont be required in final version'''
+    rotation, start_date = get_rotation(chore='groceries')
+    index, rooms_on_duty = calculate_duty(rotation, start_date, interval='month')
+    names = get_names(rooms_on_duty)
+    print('Index:', index, 'for rooms', rooms_on_duty)
+    print('Names:', names)
+    #print('CurrentIndex from db:', get_current_index(chore='groceries'))
+    # garbage_rotation, garbage_start_date = get_rotation(chore='garbage')
+    # index, rooms_on_duty = calculate_duty(garbage_rotation, garbage_start_date)
+    # names = get_names(rooms_on_duty)
+    # print('Index:', index, 'for rooms', rooms_on_duty)
+    # print('Names:', names)
+    # print('CurrentIndex from db:', get_current_index(chore='garbage'))
 
-rotation, start_date = get_rotation(chore='groceries')
-index, rooms_on_duty = calculate_duty(rotation, start_date, interval='month')
-names = get_names(rooms_on_duty)
-print('Index:', index, 'for rooms', rooms_on_duty)
-print('Names:', names)
-#update_index(index, chore)
-#print('CurrentIndex from db:', get_current_index(chore='groceries'))
+if __name__ == '__main__':
+    # Initialize the app with default credentials
+    app = firebase_admin.initialize_app()
+    db = firestore.client()
 
-# garbage_rotation, garbage_start_date = get_rotation(chore='garbage')
-# index, rooms_on_duty = calculate_duty(garbage_rotation, garbage_start_date)
-# names = get_names(rooms_on_duty)
-# print('Index:', index, 'for rooms', rooms_on_duty)
-# print('Names:', names)
-# #update_index(index, chore)
-# print('CurrentIndex from db:', get_current_index(chore='garbage'))
+    main()
