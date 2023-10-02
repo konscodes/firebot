@@ -1,7 +1,7 @@
 '''Main function to be executed with cron job.
-- Access the DB from fire module
+- Access the db from fire module
 - Rotate the duty
-- Send a reminder to Line'''
+- Send a reminder to Line with line module'''
 from fire import DataBase
 from datetime import datetime, timezone
 

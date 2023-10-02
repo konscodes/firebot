@@ -95,7 +95,24 @@ class DataBase:
         names = [doc.to_dict()['residentName'] for doc in docs if doc.id in rooms]
         return names
 
-
+    def get_code(self) -> str:
+        '''Get the pass code from the db.
+        The code will be used to associate with Line group id'''
+        return '5034'
+    
+    def update_group_id(self, code: str, group_id: str):
+        '''Associate the id of a Line group with db instance using access code.
+        
+        Args:
+            code(str): pass code associated with db instance (part of the collection)
+            group_id(str): Line group chat id
+        '''
+        data = {
+            "groupID": group_id
+        }
+        self.db.collection(code).document('LineGroup').set(data, merge=True)
+        return 'OK'
+    
     def update_date(self, chore: str, 
                     start_date=datetime.strptime(
                         '2022-12-25 00:00:00', '%Y-%m-%d %H:%M:%S')):
