@@ -3,6 +3,7 @@
 - Rotate the duty
 - Send a reminder to Line with line module'''
 from fire import DataBase
+import line_messaging
 from datetime import datetime, timezone
 
 def calculate_duty(rotation, start_date, interval='week') -> int:
@@ -40,12 +41,17 @@ def calculate_duty(rotation, start_date, interval='week') -> int:
 
 def main():
     fire = DataBase()
+
     chore = 'garbage'
     rotation, start_date = fire.get_rotation(chore)
     index, rooms_on_duty = calculate_duty(rotation, start_date)
     names = fire.get_names(rooms_on_duty)
     print('Index:', index, 'for rooms', rooms_on_duty)
     print('Names:', names)
+
+    group_id = 'test'
+    message = 'test'
+    line_messaging.send_push(group_id, message)
 
 
 if __name__ == '__main__':

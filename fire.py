@@ -99,7 +99,7 @@ class DataBase:
         '''Get the pass code from the db.
         The code will be used to associate with Line group id'''
         return '5034'
-    
+
     def update_group_id(self, code: str, group_id: str):
         '''Associate the id of a Line group with db instance using access code.
         
