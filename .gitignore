@@ -161,3 +161,7 @@ cython_debug/
 
 all_processed_data.csv
 key.json
+
+.replit
+replit.nix
+.pythonlibs
