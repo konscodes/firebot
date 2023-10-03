@@ -41,6 +41,9 @@ def calculate_duty(rotation,
         return calculate_index(int(weeks), rotation)
     elif interval == 'month':
         return calculate_index(int(months), rotation)
+    else:
+        # Default case
+        return 0, rotation[0]
 
 
 def main():
