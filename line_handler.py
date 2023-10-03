@@ -6,16 +6,13 @@ import os
 from flask import Flask, abort, request
 from linebot.v3 import WebhookHandler
 from linebot.v3.exceptions import InvalidSignatureError
-
-from linebot.v3.webhooks import (
-    JoinEvent, 
-    GroupSource
-)
+from linebot.v3.webhooks import GroupSource, JoinEvent
 
 app = Flask(__name__)
 
 channel_secret = os.environ['LINE_CHANNEL_SECRET']
 handler = WebhookHandler(channel_secret)
+
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -32,7 +29,7 @@ def callback():
     except InvalidSignatureError:
         app.logger.info(
             'Invalid signature. Please check your channel access token/channel secret.'
-            )
+        )
         abort(400)
 
     return 'OK'
@@ -46,4 +43,4 @@ def handle_group_joined(event):
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', debug=True)
