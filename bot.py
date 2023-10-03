@@ -57,7 +57,8 @@ def main():
     print('Names:', names)
 
     group_id = 'Cd8838ffe33ac87f0595ac2be8ce6579f'  # Test group
-    message = str(names)
+    message = ', '.join(names)
+    print(type(message))
     line_messaging.send_push(group_id, message)
 
 

@@ -10,8 +10,7 @@ from linebot.v3.webhooks import GroupSource, JoinEvent
 
 app = Flask(__name__)
 
-channel_secret = os.environ['LINE_CHANNEL_SECRET']
-handler = WebhookHandler(channel_secret)
+handler = WebhookHandler(channel_secret=os.environ['LINE_CHANNEL_SECRET'])
 
 
 @app.route("/callback", methods=['POST'])
