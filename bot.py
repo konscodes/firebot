@@ -62,5 +62,20 @@ def main():
     line_messaging.send_push(group_id, message)
 
 
+    '''
+    chore: dict
+        - rotation: dict
+        - current_index: int
+        return  rotation_snap: list
+                current_index: int
+    names = get_names(chore)
+        return  rotation_snap[current_index]
+    '''
+
+# TODO 
+# Create a separate firestore connector file with get_data function
+# Create other functions in main bot file
+# Leave Line functions separate
+
 if __name__ == '__main__':
     main()

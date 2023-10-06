@@ -142,3 +142,4 @@ class DataBase:
 
         self.db.collection("chores").document(chore).set(data, merge=True)
         return 'OK'
+        
