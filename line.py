@@ -11,7 +11,7 @@ import requests
 
 def send_push(group_id: str, message: str):
     print('[Line] Sending push')
-    print(message)
+    print('Message:', message)
 
     url = 'https://api.line.me/v2/bot/message/push'
     headers = {
