@@ -26,8 +26,3 @@ if __name__ == '__main__':
     group_id = 'Cd8838ffe33ac87f0595ac2be8ce6579f'  # Test group
     message = ', '.join(names)
     line.send_push(group_id, message)
-
-# TODO 
-# 1. Add rotation function to +1 the current index
-#   - add update index function to firestore py
-# 2. Put this bot on cloud functions
