@@ -1,3 +1,5 @@
+import re
+
 import firebase_admin
 from firebase_admin import firestore
 
@@ -34,3 +36,20 @@ class Data:
                 doc.to_dict()['residentName'] for doc in docs if doc.id in rooms
             ]
             return names
+    
+    def update_index(self, index: int, chore: str):
+        '''Update index in the db for a given chore.
+            
+        Args:
+            index (int): index corresponding to rooms array for given rotation
+            chore (str): a chore name (e.g. "garbage")
+        '''
+        data = {"currentIndex": index}
+
+        pattern = r'^(garbage|groceries)$'
+
+        if re.match(pattern, chore) is None:
+            return 'Error: unable to update the index. Rotation not found.'
+
+        self.db.collection("chores").document(chore).set(data, merge=True)
+        return 'OK'
