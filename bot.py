@@ -1,7 +1,8 @@
 import line
 from firestore import Data
 
-if __name__ == '__main__':
+
+def run():
     # Initialize the connection to Firestore
     data = Data()
     chore = 'garbage'
@@ -29,3 +30,6 @@ if __name__ == '__main__':
     names = ', '.join(names)
     message = f'Good morning dear people of {group_name}!\n\nThis week {chore} duty members: {names}'
     line.send_push(group_id, message)
+
+if __name__ == '__main__':
+    run()
