@@ -25,10 +25,10 @@ def run():
     data.update_index(index=next_index, chore=chore)
 
     # Get the group id for a line group and send a message to line
-    group_id = 'Cd8838ffe33ac87f0595ac2be8ce6579f'  # Test group
-    group_name = 'Omotesando House'
+    group_id = 'Cd8838ffe33ac87f0595ac2be8ce6579f'  # hardcode the group id
+    group_name = 'Omotesando House' # hardcode the group name
     names = ', '.join(names)
-    message = f'Good morning dear people of {group_name}!\n\nThis week {chore} duty members: {names}'
+    message = f'Good morning dear people of {group_name}!\n\nThis week {chore} duty members: {names}'  # noqa: E501
     line.send_push(group_id, message)
 
 if __name__ == '__main__':
