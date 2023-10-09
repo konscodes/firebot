@@ -1,81 +1,31 @@
-'''Main function to be executed with cron job.
-- Access the db from fire module
-- Rotate the duty
-- Send a reminder to Line with line module'''
-from datetime import datetime, timezone
-
-import line_messaging
-from fire import DataBase
-
-
-def calculate_duty(rotation,
-                   start_date,
-                   interval='week') -> tuple[int, list[int]]:
-    '''Calculates who is on duty by extrapolating intervals starting from a given date.
-    
-    Args:
-        rotation(list[list]): a list of lists with room numbers for each team
-        interval(str), optional: value to extrapolate over (weeks or months)
-
-    Returns:
-        Tuple[int, List[int]]: an index and a list of room numbers on duty
-    '''
-
-    difference = datetime.now(tz=timezone.utc) - start_date
-
-    weeks = difference.days // 7
-    months = difference.days // 30
-    print('Start date:', start_date)
-    print('Delta start and current:', difference.days, 'days')
-    print('Weeks', weeks, 'Months', months)
-
-    def calculate_index(counter: int, rotation: list):
-        # Account for less than a single interval from the starting date
-        if counter == 0:
-            return 0, rotation[0]
-        # The remainder of the module will correspond to an index in the rotation
-        index = (counter % len(rotation))
-        return index, rotation[index]
-
-    if interval == 'week':
-        return calculate_index(int(weeks), rotation)
-    elif interval == 'month':
-        return calculate_index(int(months), rotation)
-    else:
-        # Default case
-        return 0, rotation[0]
-
-
-def main():
-    fire = DataBase()
-
-    chore = 'garbage'
-    rotation, start_date = fire.get_rotation(chore)
-    index, rooms_on_duty = calculate_duty(rotation, start_date)
-    names = fire.get_names(rooms_on_duty)
-    print('Index:', index, 'for rooms', rooms_on_duty)
-    print('Names:', names)
-
-    group_id = 'Cd8838ffe33ac87f0595ac2be8ce6579f'  # Test group
-    message = ', '.join(names)
-    print(type(message))
-    line_messaging.send_push(group_id, message)
-
-
-    '''
-    chore: dict
-        - rotation: dict
-        - current_index: int
-        return  rotation_snap: list
-                current_index: int
-    names = get_names(chore)
-        return  rotation_snap[current_index]
-    '''
-
-# TODO 
-# Create a separate firestore connector file with get_data function
-# Create other functions in main bot file
-# Leave Line functions separate
+import line
+from firestore import Data
 
 if __name__ == '__main__':
-    main()
+    # Initialize the connection to Firestore
+    data = Data()
+    chore = 'garbage'
+
+    # Get the data
+    snapshot = data.get_chore_snapshot(chore)
+    rotation = snapshot['rotation']
+    current_index = snapshot['currentIndex']
+
+    # Calculate the next rotation
+    next_index = 0 if current_index > (len(rotation) - 1) else current_index + 1
+    rooms_on_duty = snapshot['rotation'][f'{next_index}']
+
+    # Get the names
+    names = data.get_names_from_docs(rooms_on_duty)
+    print('New index:', next_index, 'for rooms', rooms_on_duty)
+    print('Names:', names)
+
+    # Update the new index in the db
+    data.update_index(index=next_index, chore=chore)
+
+    # Get the group id for a line group and send a message to line
+    group_id = 'Cd8838ffe33ac87f0595ac2be8ce6579f'  # Test group
+    group_name = 'Omotesando House'
+    names = ', '.join(names)
+    message = f'Good morning dear people of {group_name}!\n\nThis week {chore} duty members: {names}'
+    line.send_push(group_id, message)
