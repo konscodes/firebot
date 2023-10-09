@@ -1,7 +1,10 @@
+import functions_framework
+
 import line
 from firestore import Data
 
 
+@functions_framework.http
 def run():
     # Initialize the connection to Firestore
     data = Data()
