@@ -1,12 +1,15 @@
+import os
 import re
 
 import firebase_admin
-from firebase_admin import firestore
+from firebase_admin import firestore, credentials
 
 
 class Data:
     def __init__(self) -> None:
-        self.app_instance = firebase_admin.initialize_app()
+        _key = os.environ["GOOGLE_APPLICATION_CREDENTIALS"]
+        _cred = credentials.Certificate(_key)
+        self.app_instance = firebase_admin.initialize_app(_cred)
         self.db = firestore.client(app=self.app_instance)
     
     def get_chore_snapshot(self, chore: str) -> dict:

@@ -5,7 +5,7 @@ from firestore import Data
 
 
 @functions_framework.http
-def run():
+def webhook(request=None):
     # Initialize the connection to Firestore
     data = Data()
     chore = 'garbage'
@@ -34,5 +34,7 @@ def run():
     message = f'Good morning dear people of {group_name}!\n\nThis week {chore} duty members: {names}'  # noqa: E501
     line.send_push(group_id, message)
 
+    return 'OK', 200
+
 if __name__ == '__main__':
-    run()
+    webhook()
