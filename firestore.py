@@ -1,16 +1,19 @@
+import json
 import os
 import re
 
 import firebase_admin
-from firebase_admin import firestore, credentials
+from firebase_admin import credentials, firestore
 
+# Initialize the Firebase Admin SDK outside of the function handler
+key = os.environ["GOOGLE_APPLICATION_CREDENTIALS"]
+key_dict = json.loads(key)
+cred = credentials.Certificate(key_dict)
+app_instance = firebase_admin.initialize_app(cred)
 
 class Data:
     def __init__(self) -> None:
-        _key = os.environ["GOOGLE_APPLICATION_CREDENTIALS"]
-        _cred = credentials.Certificate(_key)
-        self.app_instance = firebase_admin.initialize_app(_cred)
-        self.db = firestore.client(app=self.app_instance)
+        self.db = firestore.client(app=app_instance)
     
     def get_chore_snapshot(self, chore: str) -> dict:
             '''Get the rotation snapshot from the db.
