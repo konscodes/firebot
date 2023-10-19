@@ -28,7 +28,7 @@ def webhook(request=None):
     data.update_index(index=next_index, chore=chore)
 
     # Get the group id for a line group and send a message to line
-    group_id = 'Cd8838ffe33ac87f0595ac2be8ce6579f'  # hardcode the group id
+    group_id = 'Cf76f719c42b3154f974783b4bcfb454f'  # hardcode the group id
     group_name = 'Omotesando House' # hardcode the group name
     names = ', '.join(names)
     message = f'Good morning dear people of {group_name}!\n\nThis week {chore} duty members: {names}'  # noqa: E501
